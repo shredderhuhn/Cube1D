@@ -2,6 +2,8 @@
 // Gunter Wiedemann
 // 13.05.2023
 
+// IMPORTANT: Wire.begin() must be started in main.cpp - not in the constructor of IMU
+
 #include <Arduino.h>
 
 #ifndef IMU_H
@@ -23,7 +25,7 @@
 #define TEMPREG                 0x41
 #define GYROXREG                0x43
 #define GYROYREG                0x45
-#define GYROXREG                0x47
+#define GYROZREG                0x47
 #define ACCSETREG               0x1C
 #define LIM2G                   0x00
 #define LIM4G                   0x08

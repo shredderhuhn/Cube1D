@@ -4,25 +4,28 @@
 
 #include <Arduino.h>
 #include <IMU.h>
-#include <constants.h>
+//#include <constants.h>
 #include <Wire.h>
 
 IMU::IMU()
-{
-    Wire.begin();
-    IMU::reset();    
+{ 
 }
 
 IMU::~IMU()
 {
-    Wire.end();
+    //Wire.end();
 }
+
+
 
 void IMU::reset() {
-    IMU::setReg(PWRREG, RESET_DEVICE);
+    setReg(PWRREG, RESET_DEVICE);
+    delay(20);
+    setReg(PWRREG,0);
+    delay(20);
 }
 
-void setReg(byte reg, byte val) {
+void IMU::setReg(byte reg, byte val) {
     Wire.beginTransmission(MPU6050_ADDR);
     Wire.write(reg); // PWR_MGMT_1 register
     Wire.write(val); // Reset
@@ -70,25 +73,25 @@ void IMU::printVals() {
     Serial.print(" | tmp = "); Serial.print((tRaw + 12412.0) / 340.0);
     Serial.print(" | GyX = "); Serial.print(toStr(gyroX));
     Serial.print(" | GyY = "); Serial.print(toStr(gyroY));
-    Serial.print(" | GyZ = "); Serial.print(toStr(gyroZ));
+    Serial.print(" | GyZ = "); Serial.println(toStr(gyroZ));
 }
 
 void IMU::setAccRange(int rangeState) {
     if (rangeState == 1 || rangeState ==2 || rangeState == 3) {
-        IMU::setReg(ACCSETREG, maxGRegVal[rangeState]);
+        setReg(ACCSETREG, maxGRegVal[rangeState]);
     } else {
         // default state = 0
-        IMU::setReg(ACCSETREG,maxGRegVal[0]);
+        setReg(ACCSETREG,maxGRegVal[0]);
     }
         
 }
 
 void IMU::setGyroRange(int rangeState) {
     if (rangeState == 1 || rangeState ==2 || rangeState == 3) {
-        IMU::setReg(GYROSETREG, maxDpsRegVal[rangeState]);
+        setReg(GYROSETREG, maxDpsRegVal[rangeState]);
     } else {
         // default state = 0
-        IMU::setReg(GYROSETREG,maxDpsRegVal[0]);
+        setReg(GYROSETREG,maxDpsRegVal[0]);
     }
         
 }
