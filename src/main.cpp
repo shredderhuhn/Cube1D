@@ -22,6 +22,7 @@ IMU imu;
 
 int waittime = 1000;
 int16_t temp = -1;
+int testsum = 0;
 unsigned long  time1, time2, time3, deltatime1, deltatime2;
 
 
@@ -32,11 +33,11 @@ void setup() {
 
   Wire.begin();
   imu.reset();
-  //imu.calibrateGyro();
-  //imu.calibrateACC(0,-16000);
-  //imu.calibrateACC(1,0);
-  //imu.calibrateACC(2,0);
-  
+  imu.calibrateGyro();
+  imu.calibrateACC(0,-16384);
+  imu.calibrateACC(1,0);
+  imu.calibrateACC(2,0);
+  imu.printOffsets();
 }
 
 
@@ -46,6 +47,7 @@ void loop() {
   imu.getAllVals();
   time2 = micros(); 
   imu.printVals();
+  //imu.printRawVals();
   time3 = micros();
 
   deltatime1 = time2 - time1;
@@ -53,14 +55,6 @@ void loop() {
 
   Serial.print("I2C-Auslesezeit: "); Serial.print(deltatime1); Serial.println(" us");
   Serial.print("I2C-Printzeit: "); Serial.print(deltatime2); Serial.println(" us");
-  
-  delay(1000);
-
-  temp = imu.getVal(GYROXREG);
-  Serial.print("GyX = "); Serial.println(toStr(temp));
-  Serial.print("GyX ohne Str = "); Serial.println(temp);
-
-  //imu.calibrateGyro();
 
   delay(10000);
   

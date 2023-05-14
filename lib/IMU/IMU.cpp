@@ -16,8 +16,8 @@ IMU::~IMU()
 }
 
 void IMU::reset() {
-    //setReg(PWRREG, RESET_DEVICE); // Unsinn?
-    //delay(20);
+    setReg(PWRREG, RESET_DEVICE);
+    delay(20);
     setReg(PWRREG,0);
     delay(20);
 }
@@ -33,16 +33,16 @@ byte IMU::getReg(byte reg) {
     Wire.beginTransmission(MPU6050_ADDR);
     Wire.write(reg);
     Wire.endTransmission(false); // dont stop
-    Wire.requestFrom(MPU6050_ADDR, 1, true); // request 1 register
+    Wire.requestFrom(MPU6050_ADDR, 1); // request 1 register
     return Wire.read();
 }
 
-int IMU::getVal(byte reg) {
+int16_t IMU::getVal(byte reg) {
     Wire.beginTransmission(MPU6050_ADDR);
     Wire.write(reg);
     Wire.endTransmission(false); // dont stop
-    Wire.requestFrom(MPU6050_ADDR, 2, true); // request 2 registers
-    int out =  Wire.read()<<8 | Wire.read();
+    Wire.requestFrom(MPU6050_ADDR, 2); // request 2 registers
+    int16_t out =  Wire.read()<<8 | Wire.read();
     return out;
 }
 
@@ -71,25 +71,38 @@ void IMU::printVals() {
     Serial.print(" | GyX = "); Serial.print(toStr(gyroX));
     Serial.print(" | GyY = "); Serial.print(toStr(gyroY));
     Serial.print(" | GyZ = "); Serial.println(toStr(gyroZ));
-    Serial.print("AOX ");Serial.print(accOffset[0]);
-    Serial.print("   AOY ");Serial.print(accOffset[1]);
-    Serial.print("   AOZ ");Serial.println(accOffset[2]);
-    Serial.print("GOX ");Serial.print(gyroOffset[0]);
-    Serial.print("   GOY ");Serial.print(gyroOffset[1]);
-    Serial.print("   GOZ ");Serial.println(gyroOffset[2]);
 }
 
-void IMU::setAccRange(int rangeState) {
+void IMU::printRawVals() {
+    Serial.print("AcX = "); Serial.print(toStr(accX+accOffset[0]));
+    Serial.print(" | AcY = "); Serial.print(toStr(accY+accOffset[1]));
+    Serial.print(" | AcZ = "); Serial.print(toStr(accZ+accOffset[2]));
+    Serial.print(" | tmp = "); Serial.print(tRaw);
+    Serial.print(" | GyX = "); Serial.print(toStr(gyroX+gyroOffset[0]));
+    Serial.print(" | GyY = "); Serial.print(toStr(gyroY+gyroOffset[1]));
+    Serial.print(" | GyZ = "); Serial.println(toStr(gyroZ+gyroOffset[2]));
+}
+
+void IMU::printOffsets() {
+    Serial.print("AOX = "); Serial.print(toStr(accOffset[0]));
+    Serial.print(" | AOY = "); Serial.print(toStr(accOffset[1]));
+    Serial.print(" | AOZ = "); Serial.print(toStr(accOffset[2]));
+    Serial.print(" | GOX = "); Serial.print(toStr(gyroOffset[0]));
+    Serial.print(" | GOY = "); Serial.print(toStr(gyroOffset[1]));
+    Serial.print(" | GOZ = "); Serial.println(toStr(gyroOffset[2]));
+}
+
+void IMU::setAccRange(int16_t rangeState) {
     if (rangeState == 1 || rangeState ==2 || rangeState == 3) {
         setReg(ACCSETREG, maxGRegVal[rangeState]);
     } else {
-        // default state = 0
+        // default state is 0
         setReg(ACCSETREG,maxGRegVal[0]);
     }
         
 }
 
-void IMU::setGyroRange(int rangeState) {
+void IMU::setGyroRange(int16_t rangeState) {
     if (rangeState == 1 || rangeState ==2 || rangeState == 3) {
         setReg(GYROSETREG, maxDpsRegVal[rangeState]);
     } else {
@@ -99,7 +112,7 @@ void IMU::setGyroRange(int rangeState) {
         
 }
 
-void IMU::calibrateACC(int axis, int value) {
+void IMU::calibrateACC(int16_t axis, int16_t value) {
     if ((axis==0)||(axis==1)||(axis==2)) {
         byte address = ACCXREG + (0x02 * axis);
         accOffset[axis] = calcOffset(address, value);
@@ -109,37 +122,24 @@ void IMU::calibrateACC(int axis, int value) {
 
 void IMU::calibrateGyro() {
     
-    for  (int i = 0; i < 1; i++) {
+    for  (byte i = 0; i < 3; i++) {
         byte address = GYROXREG + (0x02 * i);        
-        int temp = getVal(address);
-        Serial.print(" | Gyro in Funktion = "); Serial.print(toStr(temp));
-        delay(20);
-        //gyroOffset[i] = calcOffset(address,0);
-        int mean = getVal(address);
-        //Serial.print("  mean = "); Serial.println((int)mean);
-        Serial.print("  mean = "); Serial.println(toStr(mean));
-        //int temp2 = calcOffset(address,0);
+        gyroOffset[i] = calcOffset(address,0);
     }
-    
-   //int temp = getVal(GYROXREG);
-   //Serial.print(" | GyX in Funktion = "); Serial.print(toStr(temp));
 }
 
-int IMU::calcOffset(byte address, int value) {
-    /*
-    int n = 1;
+int16_t IMU::calcOffset(byte address, int16_t value) {
+    
+    int n = 100;
     int mean = 0;
     for (int i = 0; i < n; i++) {
-        mean = getVal(address);
+        mean += getVal(address) - value;
         //delay(20);
     }
     mean = mean/n;
-    */
-    int mean = getVal(address);
-    Serial.print("  mean = "); Serial.println((int)mean);
-    if ((mean > 32760) || (mean < -32760)) {
+    if ((mean > 32767) || (mean < -32768)) {
         mean = 0;
-        Serial.println("mean rueckgesetzt auf 0.");
+        //Serial.println("mean rueckgesetzt auf 0.");
     }
-    return (int)mean;
+    return (int16_t)mean;
 }
