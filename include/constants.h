@@ -23,8 +23,8 @@
 // IMU-Wire-IF uses SCL/SDA-pins (21,20)
 
 // Motor driver 8825
-#define STEP                        9
-#define DIR                         8
+#define DIR                         9
+#define STEP                        8
 #define RST                         7   // needs to be HIGH to work
 #define MS2                         6
 #define MS1                         5

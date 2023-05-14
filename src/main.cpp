@@ -5,11 +5,13 @@
 // using a 200-step motor (most common)
 #define MOTOR_STEPS 200
 // configure the pins connected
-#define DIR 8
-#define STEP 9
-#define MS1 10
-#define MS2 11
-#define MS3 12
+#define DIR                         9
+#define STEP                        8
+#define RST                         7   // needs to be HIGH to work
+#define MS2                         6
+#define MS1                         5
+#define MS0                         4
+#define ENA                         3   // HIGH = stop
 
 // Methods and vars for printing
 char result[7]; // temporary variable used in convert function
@@ -27,8 +29,23 @@ unsigned long  time1, time2, time3, deltatime1, deltatime2;
 
 
 void setup() {
-  //pinMode(STEP,OUTPUT);
+  pinMode(ENA,OUTPUT);
+  pinMode(STEP,OUTPUT);
+  pinMode(DIR,OUTPUT);
+  pinMode(RST,OUTPUT);
+  pinMode(MS0, OUTPUT);
+  pinMode(MS1,OUTPUT);
+  pinMode(MS2,OUTPUT);
+  digitalWrite(ENA,LOW);
+  digitalWrite(DIR,LOW);
+  digitalWrite(MS0,LOW);
+  digitalWrite(MS1,LOW);
+  digitalWrite(MS2,LOW);
+  digitalWrite(RST,HIGH);
+
   //pinMode(LED_BUILTIN,OUTPUT);
+
+  /*
   Serial.begin(9600);
 
   Wire.begin();
@@ -38,11 +55,12 @@ void setup() {
   imu.calibrateACC(1,0);
   imu.calibrateACC(2,0);
   imu.printOffsets();
+  */
 }
 
 
 void loop() {
-
+  /*
   time1 = micros();  
   imu.getAllVals();
   time2 = micros(); 
@@ -57,14 +75,16 @@ void loop() {
   Serial.print("I2C-Printzeit: "); Serial.print(deltatime2); Serial.println(" us");
 
   delay(10000);
-  
-  //digitalWrite(STEP, HIGH);
-  //digitalWrite(LED_BUILTIN, HIGH);
-  //delay(waittime);
 
-  //digitalWrite(STEP,LOW);
+  */
+  
+  digitalWrite(STEP, HIGH);
+  //digitalWrite(LED_BUILTIN, HIGH);
+  delayMicroseconds(waittime);
+
+  digitalWrite(STEP,LOW);
   //digitalWrite(LED_BUILTIN,LOW);
-  //delay(waittime);
+  delayMicroseconds(waittime);
 
   //waittime ++;
 }
