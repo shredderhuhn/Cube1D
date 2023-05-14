@@ -61,17 +61,16 @@ private:
     int gyroZ = 0;
     int tRaw = 0;
 
-    // offsets
-    int accXOffset = 0;
-    int accYOffset = 0;
-    int accZOffset = 0;
-    int gyroXOffset = 0;
-    int gyroYOffset = 0;
-    int gyroZOffset = 0;
+    // offset handling
+    byte accReg[3] = {ACCXREG, ACCYREG, ACCZREG};
+    int accOffset[3] = {0, 0, 0}; // x, y, z
+    byte gyroReg[3] = {GYROXREG, GYROYREG, GYROZREG};
+    int gyroOffset[3] = {0, 0, 0}; // x, y, z 
 
     // internal states
     int maxG[4] = {2,4,8,16};
     byte maxGRegVal[4] = {LIM2G, LIM4G, LIM8G, LIM16G};
+    
     int maxGState = 0;
     int maxDps[4] = {250, 500, 1000, 2000};
     byte maxDpsRegVal[4] = {LIM250DPS, LIM500DPS, LIM1000DPS, LIM2000DPS};
@@ -81,8 +80,8 @@ private:
     char result[7]; // temporary variable used in convert function
     char* toStr(int16_t character) { // converts int16 to string and formatting
         sprintf(result, "%6d", character);
-    return result;
-}
+        return result;
+    }
 
 public:
 
@@ -131,6 +130,21 @@ public:
     ///         3 - +-2000dps
     void setGyroRange(int rangeState);
 
+    /// @brief determines the offset of one acceleration axis :
+    /// @param axis 
+    ///         0 - x
+    ///         1 - y
+    ///         2 - z
+    void calibrateACC(int axis, int value);
+
+    /// @brief determines the offset of the gyro in all 3 axes
+    void calibrateGyro();
+
+    /// @brief determines the mean deviation of a value in 16bit register
+    /// @param address address of the value the offset of which shall be determined 
+    /// @param value value, the offset shall be determined to
+    /// @returns mean value of the offset
+    int calcOffset(byte address, int value);
 
 };
 
