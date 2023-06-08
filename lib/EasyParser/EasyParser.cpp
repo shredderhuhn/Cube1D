@@ -86,9 +86,6 @@ bool EasyParser::InKeyWord(String aString)
   return false;
 }
 
-
-// {"help","ver","acc","setvel","goacc","imu",\
-                             "dir","micro"}
 void EasyParser::printHelp() {
   Serial.println("Folgende Kommandos stehen zur Verfügung.");
   Serial.println("?               - Hilfe");
