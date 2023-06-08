@@ -17,6 +17,7 @@
 #include <Arduino.h>
 
 
+/// @brief Parses the read string
 class EasyParser
 {
 
