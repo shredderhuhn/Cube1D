@@ -29,9 +29,12 @@
 #define MS2                         6
 #define MS1                         5
 #define MS0                         4
-#define ENABLE                      3   // LOW = enabled
+#define ENA                         3   // LOW = enabled
 
-
+/**********************************/
+/* Motor constants                */
+/**********************************/
+// are in motor.h
 
 /*************************************/
 /* Parameter of the MPU6050 Sensor   */

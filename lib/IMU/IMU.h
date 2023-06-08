@@ -150,6 +150,18 @@ public:
     /// @returns mean value of the offset
     int16_t calcOffset(byte address, int16_t value);
 
+    /// @brief MSB of the IMU gyro values
+    /// @return 0|1|2|3
+    int16_t getMaxDpsState() {
+        return maxDpsState;
+    }
+
+    /// @brief MSB of the acceleration values
+    /// @return 0|1|2|3
+    int16_t getMaxGState() {
+        return maxGState;
+    }
+
 };
 
 

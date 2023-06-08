@@ -95,9 +95,11 @@ void IMU::printOffsets() {
 void IMU::setAccRange(int16_t rangeState) {
     if (rangeState == 1 || rangeState ==2 || rangeState == 3) {
         setReg(ACCSETREG, maxGRegVal[rangeState]);
+        maxDpsState = rangeState;
     } else {
         // default state is 0
         setReg(ACCSETREG,maxGRegVal[0]);
+        maxDpsState = 0;
     }
         
 }
@@ -105,9 +107,11 @@ void IMU::setAccRange(int16_t rangeState) {
 void IMU::setGyroRange(int16_t rangeState) {
     if (rangeState == 1 || rangeState ==2 || rangeState == 3) {
         setReg(GYROSETREG, maxDpsRegVal[rangeState]);
+        maxDpsState = rangeState;
     } else {
         // default state = 0
         setReg(GYROSETREG,maxDpsRegVal[0]);
+        maxDpsState = 0;
     }
         
 }
