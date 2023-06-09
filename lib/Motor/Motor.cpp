@@ -1,7 +1,7 @@
 #include <Motor.h>
 #include <Arduino.h>
 
-Motor::Motor(uint8_t _dirPin, 
+void Motor::init(uint8_t _dirPin, 
              uint8_t _stepPin, 
              uint8_t _rstPin, 
              uint8_t _ms2Pin, 

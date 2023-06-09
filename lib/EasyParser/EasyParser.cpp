@@ -91,7 +91,7 @@ void EasyParser::printHelp() {
   Serial.println("?               - Hilfe");
   Serial.println("help            - Hilfe");
   Serial.println("ver?            - Version der Software: Datum und Zeit");
-  Serial.println("motoracc!x      - Motor mit x [LSB 10mrad/s^2] beschleunigen");
+  Serial.println("macc!x          - Motor mit x [LSB 10mrad/s^2] beschleunigen");
   Serial.println("macc?           - Beschleunigung x für Geschw.änderung auslesen [LSB 10mrad/s^2]");
   Serial.println("mvel!x          - Motor auf Geschwindigkeit (Betrag in [LSB 1mrad/s]) setzen (mit Beschleunigung aus acc.x)");
   Serial.println("mvel?           - aktuelle Gescwindigkeit auslesen [LSB 10mrad/s^2]");
@@ -99,13 +99,11 @@ void EasyParser::printHelp() {
   Serial.println("micro?          - Microsstepping rückgeben [Faktor]"); 
   Serial.println("imu?            - IMU-Werte ausgeben");
   Serial.println("imuraw?         - IMU-Rohwerte ausgeben");
-  Serial.println("imuoffset?      - IMU-Offset-Werte ausgeben");
-  Serial.println("calacc          - IMU-Beschleunigungs-Offset-Werte kalibirieren");
-  Serial.println("calgyro         - IMU-Gyro-Offset-Werte kalibirieren");  
+  Serial.println("imucal?         - IMU-Offset-Werte kalibrieren und ausgeben (z=-1g");
   Serial.println("iacc!x          - IMU-Beschl.Range einstellen x = [0|1|2|3] => 2g|4g|8g|16g");
   Serial.println("iacc?           - IMU-Beschl.Range auslesen x = [0|1|2|3] => 2g|4g|8g|16g");
-  Serial.println("igyro!x          - IMU-Gyro-Range einstellen x = [0|1|2|3] => 250|500|1000|2000 dps");
-  Serial.println("igyro?           - IMU-Gyro-Range auslesen x = [0|1|2|3] => 250|500|1000|2000 dps");  
+  Serial.println("igyro!x         - IMU-Gyro-Range einstellen x = [0|1|2|3] => 250|500|1000|2000 dps");
+  Serial.println("igyro?          - IMU-Gyro-Range auslesen x = [0|1|2|3] => 250|500|1000|2000 dps");  
   Serial.println("test!0.0.0      - Übergabe von beliebigen Testwerte");
   Serial.println("");
   Serial.println("Für alle Eingaben gilt: ON|VALID = 1 sowie OFF|INVALID = 0");

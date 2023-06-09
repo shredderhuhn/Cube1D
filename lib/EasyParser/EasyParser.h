@@ -27,8 +27,7 @@ private:
   // eine Deklaration wie "String validKeyWord[]" und anschließender Definition im Konstruktor geht leider nicht
   // deswegen werden die Keywords hier mit definiert 
   int nKeyWords = 13; //sizeof liefert Anzahl aller Zeichen (56 tbc)
-  String validKeyWord[13] = {"help","ver","macc","mvel","micro", "calacc", "calgyro"\
-                             "imu", "imuraw", "imuoffset", "iacc", "igyro", "test"};
+  String validKeyWord[13] = {"help","ver","macc","mvel","micro", "calacc", "calgyro", "imu", "imuraw", "imucal", "iacc", "igyro", "test"};
   String wholeString = "";
   bool InKeyWord(String);
 

@@ -48,6 +48,10 @@ class Motor {
 
     public:
 
+    // kein Konstrukor, da die Pin-Ausgangswerte (HIGH/LOW), 
+    // die außerhalb von setup gesetzt werden, wieder alle auf LOW gesetzt werden
+    // Deswegen wird alles in einer init-Funktion gesetzt, die in setup ausgeführt wird
+
     /// @brief Konstruktor, der alle Pins setzt, aber den Motor nicht enabled
     /// @param _dirPin Richtungspin (wird 0 gesetzt)
     /// @param _stepPin muss getoggelt werden, damit der Motor sich dreht
@@ -56,7 +60,7 @@ class Motor {
     /// @param _ms1Pin Microstepping mittleres Bit
     /// @param _ms0Pin Microstepping LSB
     /// @param _enablePin Enable-Pin, muss 0 sein für Betrieb (wird aber auf 1 gesetzt)
-        Motor(  uint8_t _dirPin, 
+        void init(  uint8_t _dirPin, 
                 uint8_t _stepPin, 
                 uint8_t _rstPin, 
                 uint8_t _ms2Pin, uint8_t _ms1Pin, uint8_t _ms0Pin, 

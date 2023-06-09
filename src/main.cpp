@@ -4,6 +4,7 @@
 #include <EasyParser.h>
 #include <Motor.h>
 #include <constants.h>
+#include<DueTimer.h>
 
 // using a 200-step motor (most common)
 #define MOTOR_STEPS 200
@@ -21,9 +22,9 @@
 
 IMU imu;
 
-Motor motor = Motor(DIR, STEP, RST, MS2, MS1, MS0, ENA);
+Motor motor; // = Motor(); ???
 
-int waittime = 1000;
+int stepTime = 1000;
 int16_t temp = -1;
 int testsum = 0;
 unsigned long  time1, time2, time3, deltatime1, deltatime2;
@@ -31,10 +32,16 @@ unsigned long  time1, time2, time3, deltatime1, deltatime2;
 // Methods and vars for printing
 char result[7]; // temporary variable used in convert function
 char* toStr(int16_t character) { // converts int16 to string and formatting
-    sprintf(result, "%6d", character);
-    return result;
+  sprintf(result, "%6d", character);
+  return result;
 }
 
+// schaltet die steps 
+void stepHandler() {
+  static bool level = true;
+  level = !level;
+  digitalWrite(STEP, level);
+}
 
 void serialInteraction() {
   static EasyParser zerlegterString;
@@ -58,15 +65,18 @@ void serialInteraction() {
       Serial.println(__TIME__);
       
     } else if (zerlegterString.cmd == "macc" && zerlegterString.set) {
-
       motor.setAcceleration((int16_t)(zerlegterString.number[0]));
-      
+
+    } else if (zerlegterString.cmd == "macc" && zerlegterString.get) {
+      Serial.print("macc = ");
+      Serial.println(motor.getAccelaration());
+  
     } else if (zerlegterString.cmd == "mvel" && zerlegterString.set) {
       motor.setVelocity((int16_t)(zerlegterString.number[0]));
 
     } else if (zerlegterString.cmd == "mvel" && zerlegterString.get) {
-      Serial.print("vel = ");
-      Serial.print(motor.getVelocity());
+      Serial.print("mvel = ");
+      Serial.println(motor.getVelocity());
       
     } else if ((zerlegterString.cmd == "micro") && zerlegterString.set) {
       motor.setMicroStepping((uint8_t)(zerlegterString.number[0]));
@@ -78,12 +88,25 @@ void serialInteraction() {
       Serial.println(motor.getMicroStepping());
       
     } else if ((zerlegterString.cmd == "imu") && zerlegterString.get) {
+      imu.getAllVals();
       imu.printVals();
 
     } else if ((zerlegterString.cmd == "imuraw") && zerlegterString.get) {
       imu.printRawVals();
       
     } else if ((zerlegterString.cmd == "imuoffset") && zerlegterString.get) {
+      int accx = 1;
+      for(int i = 1; i<imu.getMaxGState(); i++) {
+        accx *= 2;
+      }
+      accx = -16384/accx;
+      Serial.print("Kalbirationswert = ");
+      Serial.println(accx);
+      imu.calibrateGyro();
+      imu.calibrateACC(0,accx);
+      imu.calibrateACC(1,0);
+      imu.calibrateACC(2,0);
+      Serial.println("Neue Offsets: ");
       imu.printOffsets();
         
     } else if ((zerlegterString.cmd == "iacc") && zerlegterString.set) {
@@ -118,30 +141,20 @@ void serialInteraction() {
 
 
 void setup() {
-  /*
-  pinMode(ENA,OUTPUT);
-  pinMode(STEP,OUTPUT);
-  pinMode(DIR,OUTPUT);
-  pinMode(RST,OUTPUT);
-  pinMode(MS0, OUTPUT);
-  pinMode(MS1,OUTPUT);
-  pinMode(MS2,OUTPUT);
-  digitalWrite(ENA,LOW);
-  digitalWrite(DIR,LOW);
-  digitalWrite(MS0,LOW);
-  digitalWrite(MS1,LOW);
-  digitalWrite(MS2,LOW);
-  digitalWrite(RST,HIGH);
-  */
-  //digitalWrite(RST,HIGH);
+
+  
+
+  motor.init(DIR, STEP, RST, MS2, MS1, MS0, ENA);
   motor.reset();
   motor.enable();
-  
+
+  Timer3.attachInterrupt(stepHandler);
+	Timer3.start(stepTime); // Calls every 50ms
+
   //pinMode(LED_BUILTIN,OUTPUT);
 
-  /*
   Serial.begin(9600);
-
+  
   Wire.begin();
   imu.reset();
   imu.calibrateGyro();
@@ -149,11 +162,13 @@ void setup() {
   imu.calibrateACC(1,0);
   imu.calibrateACC(2,0);
   imu.printOffsets();
-  */
+  
 }
 
 
 void loop() {
+  serialInteraction();
+  
   /*
   time1 = micros();  
   imu.getAllVals();
@@ -172,13 +187,4 @@ void loop() {
 
   */
   
-  digitalWrite(STEP, HIGH);
-  //digitalWrite(LED_BUILTIN, HIGH);
-  delayMicroseconds(waittime);
-
-  digitalWrite(STEP,LOW);
-  //digitalWrite(LED_BUILTIN,LOW);
-  delayMicroseconds(waittime);
-
-  //waittime ++;
 }
