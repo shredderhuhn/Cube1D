@@ -156,6 +156,7 @@ void setup() {
   Serial.begin(9600);
   
   Wire.begin();
+  Wire.setClock(1600000);
   imu.reset();
   imu.calibrateGyro();
   imu.calibrateACC(0,-16384);
@@ -169,7 +170,7 @@ void setup() {
 void loop() {
   serialInteraction();
   
-  /*
+  
   time1 = micros();  
   imu.getAllVals();
   time2 = micros(); 
@@ -185,6 +186,6 @@ void loop() {
 
   delay(10000);
 
-  */
+  
   
 }
