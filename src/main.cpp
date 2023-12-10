@@ -4,10 +4,11 @@
 #include <EasyParser.h>
 #include <Motor.h>
 #include <constants.h>
-#include<DueTimer.h>
+#include <DueTimer.h>
+#include <controller.h>
 
 // using a 200-step motor (most common)
-#define MOTOR_STEPS 200
+// #define MOTOR_STEPS 200
 // configure the pins connected
 /*
 #define DIR                         9
@@ -27,7 +28,8 @@ Motor motor; // = Motor(); ???
 int stepTime = 1000;
 int16_t temp = -1;
 int testsum = 0;
-unsigned long  time1, time2, time3, deltatime1, deltatime2;
+unsigned long  lastTickTime, currentTime, nextSampleTime, nextTickTime, newNextTickTime, time1, time2, time3, deltatime1, deltatime2;
+bool nextDir = false; // Richtung des Motors beim nächsten step
 
 // Methods and vars for printing
 char result[7]; // temporary variable used in convert function
@@ -37,11 +39,45 @@ char* toStr(int16_t character) { // converts int16 to string and formatting
 }
 
 // schaltet die steps 
-void stepHandler() {
-  static bool level = true;
-  level = !level;
+void stepHandler() { 
+  static bool level = false;
+  digitalWrite(DIR, nextDir);
   digitalWrite(STEP, level);
+  level = !level;  
 }
+
+void tickHandler() {
+  stepHandler();
+  lastTickTime = micros();
+  nextTickTime = lastTickTime + ctrl.tick;
+  Timer3.stop();
+  Timer3.start(ctrl.tick);
+  nextDir = ctrl.dir;
+}
+
+void controllerHandler() {
+  imu.getAllVals();
+  calcController(imu.getAccX());
+  calcTick();
+  currentTime = micros();
+  nextSampleTime = currentTime + SAMPLETIME;
+  newNextTickTime = lastTickTime + ctrl.tick;
+  //nextTickTime is calced in tickHandler()
+  if (nextTickTime > nextSampleTime) { 
+    nextDir = ctrl.dir; // unklar, ob so sinnvoll oder ob man es einfach weglassen kann (einflusss sollte gering sein)   
+    if (newNextTickTime < currentTime) {
+      // neuer Tick liegt in der Vergangenheit
+      tickHandler();
+    } else {
+      // neuer Tick liegt in der Zukunft
+      Timer3.stop();
+      Timer3.start(newNextTickTime - currentTime);
+      nextTickTime = newNextTickTime;
+    }
+  }
+}
+
+
 
 void serialInteraction() {
   static EasyParser zerlegterString;

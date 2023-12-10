@@ -91,6 +91,9 @@ public:
     /// @brief resets the MPU6050
     void reset();
 
+    /// @brief resets all internal offsets
+    void resetOffsets();
+
     /// @brief sets in register of the MPU6050
     /// @param reg register number to set
     /// @param val value to write
@@ -161,6 +164,34 @@ public:
     int16_t getMaxGState() {
         return maxGState;
     }
+
+    // Getter and Setter Acc
+    int getAccX() {return accX + accOffset[0];}
+    int getAccY() {return accY + accOffset[1];}
+    int getAccZ() {return accZ + accOffset[2];}
+    int getAccXRaw() {return accX;}
+    int getAccYRaw() {return accY;}
+    int getAccZRaw() {return accZ;}
+    int getAccOffsetX() {return accOffset[0];}
+    int getAccOffsetY() {return accOffset[1];}
+    int getAccOffsetZ() {return accOffset[2];}
+    int setAccOffsetX(int16_t val) {accOffset[0] = val;}
+    int setAccOffsetY(int16_t val) {accOffset[1] = val;}
+    int setAccOffsetZ(int16_t val) {accOffset[2] = val;}
+
+    // Getter and Setter Gyro
+    int getGyroX() {return gyroX + gyroOffset[0];}
+    int getGyroY() {return gyroY + gyroOffset[1];}
+    int getGyroZ() {return gyroZ + gyroOffset[2];}
+    int getGyroXRaw() {return gyroX;}
+    int getGyroYRaw() {return gyroY;}
+    int getGyroZRaw() {return gyroZ;}
+    int getGyroOffsetX() {return gyroOffset[0];}
+    int getGyroOffsetY() {return gyroOffset[1];}
+    int getGyroOffsetZ() {return gyroOffset[2];}
+    int setGyroOffsetX(int16_t val) {gyroOffset[0] = val;}
+    int setGyroOffsetY(int16_t val) {gyroOffset[1] = val;}
+    int setGyroOffsetZ(int16_t val) {gyroOffset[2] = val;}
 
 };
 

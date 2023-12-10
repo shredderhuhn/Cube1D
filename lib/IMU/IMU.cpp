@@ -22,6 +22,15 @@ void IMU::reset() {
     delay(20);
 }
 
+void IMU::resetOffsets() {
+    accOffset[0] = 0;
+    accOffset[1] = 0;
+    accOffset[2] = 0;
+    gyroOffset[0] = 0;
+    gyroOffset[1] = 0;
+    gyroOffset[2] = 0;
+}
+
 void IMU::setReg(byte reg, byte val) {
     Wire.beginTransmission(MPU6050_ADDR);
     Wire.write(reg); // PWR_MGMT_1 register
