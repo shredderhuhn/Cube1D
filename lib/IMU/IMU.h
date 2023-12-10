@@ -175,9 +175,9 @@ public:
     int getAccOffsetX() {return accOffset[0];}
     int getAccOffsetY() {return accOffset[1];}
     int getAccOffsetZ() {return accOffset[2];}
-    int setAccOffsetX(int16_t val) {accOffset[0] = val;}
-    int setAccOffsetY(int16_t val) {accOffset[1] = val;}
-    int setAccOffsetZ(int16_t val) {accOffset[2] = val;}
+    void setAccOffsetX(int16_t val) {accOffset[0] = val;}
+    void setAccOffsetY(int16_t val) {accOffset[1] = val;}
+    void setAccOffsetZ(int16_t val) {accOffset[2] = val;}
 
     // Getter and Setter Gyro
     int getGyroX() {return gyroX + gyroOffset[0];}
@@ -189,9 +189,9 @@ public:
     int getGyroOffsetX() {return gyroOffset[0];}
     int getGyroOffsetY() {return gyroOffset[1];}
     int getGyroOffsetZ() {return gyroOffset[2];}
-    int setGyroOffsetX(int16_t val) {gyroOffset[0] = val;}
-    int setGyroOffsetY(int16_t val) {gyroOffset[1] = val;}
-    int setGyroOffsetZ(int16_t val) {gyroOffset[2] = val;}
+    void setGyroOffsetX(int16_t val) {gyroOffset[0] = val;}
+    void setGyroOffsetY(int16_t val) {gyroOffset[1] = val;}
+    void setGyroOffsetZ(int16_t val) {gyroOffset[2] = val;}
 
 };
 
