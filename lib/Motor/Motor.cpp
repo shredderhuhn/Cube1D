@@ -25,13 +25,13 @@ void Motor::init(uint8_t _dirPin,
     pinMode(enablePin,OUTPUT);
 
     disable();
-    setMicroStepping(1);
+    writeMicroStepping(1);
     reset();
     //setDirection(dir);
 }
 
 
-bool Motor::setMicroStepping(uint8_t divider) {
+bool Motor::writeMicroStepping(uint8_t divider) {
     switch (divider)
     {
         case 1: //0 0 0
@@ -74,42 +74,15 @@ bool Motor::setMicroStepping(uint8_t divider) {
         
 }
 
-
-void Motor::setDirection(uint8_t directionFlag) {
-    if (directionFlag == 1) {
-        digitalWrite(dirPin,HIGH);
-        dir = 1;
-    } else {
-        digitalWrite(dirPin,0);
-        dir = -1;
-    }
+void Motor::writeDirection(bool directionFlag) {
+    digitalWrite(dirPin,directionFlag);
 }
 
-
-void Motor::setVelocity(int16_t _velo) {
-    if ((_velo<maxVelo) && (_velo>-maxVelo)) {
-        velo = _velo;
-    }
-}
-
-void Motor::setAcceleration(int16_t _acc) {
-    if ((_acc<maxAcc) && (_acc>-maxAcc)) {
-        acc = _acc;
-    }
-}
-
-
-void Motor::setDeltaT(uint16_t time) {
-    deltaT = time;
-}
-
-
-void Motor::setStepTick(uint16_t tick){
-    ///TODO: Tick berechnen, in Abhängigkeit von acc, mit max/min velo
-    ///TODO: v_ist und v_soll einführen
-    ///TODO: accelaration mode einführen -> v_soll = v_max - brauche ich dann noch einen acc.mode?
-    ///TODO: velocitymode einführen -> acc auf max - dann bbrauchen wir auch keinen extra mode
-    //uint16_t deltaTick = acc;
+void Motor::writeTick(bool directionFlag){
+    static bool tickState = false;
+    digitalWrite(dirPin, directionFlag);
+    digitalWrite(stepPin, tickState);
+    tickState = !tickState;  
 }
 
 

@@ -61,14 +61,6 @@ void initController(void);
 /// @brief calculating from ctrl.u [10mrad/s^2] into tick in [us]
 void calcTick(void);
 
-void setOutputValues(void);
-
-void resetOutputValues(void);
-
-void setCurrent(void);
-
-void resetCurrent(void);
-
 void resetState(Status &status);
 
 #endif

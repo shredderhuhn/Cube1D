@@ -57,6 +57,6 @@
 #define K2Z                         236
 #define K3Z                         10
 #define TAZZ                        (SAMPLETIME  << 10) / 1000 // ist 1*2^10 bei 1ms Abtastzeit
-#define KSTEPZZ                     3141592     // gueltig bei 200ticks/U
+#define KSTEPZZ                     392699082     // gueltig bei 200ticks/U = pi * 10^9 * 2^-3
 
 #endif

@@ -6,16 +6,13 @@ Ctrl ctrl;
 
 void calcController(int measpoint) {
   
-  ctrl.error = -(ctrl.setpoint - measpoint);
+  ctrl.error = (ctrl.setpoint - measpoint);
   ctrl.errorTildeKM1 = ctrl.errorTildeK;
   ctrl.errorTildeK = (K0Z * ctrl.error) >> 10;
   ctrl.u1K = (ctrl.errorTildeK * K3Z) >> 0;
   ctrl.u2KM1 = ctrl.u2K;
   ctrl.u2K = ((ctrl.errorTildeKM1 * K1Z) >> 8) + ((ctrl.u2KM1 * K2Z) >> 8);
   ctrl.u = (ctrl.u1K + ctrl.u2K);
-  //ctrl.dac0 = UDAC0;
-  //ctrl.dac1 = constrain(ctrl.u + ctrl.offset + UDAC0, 0, 4095);
-
 }
 
 void resetController(void) {
@@ -60,31 +57,6 @@ void calcTick() {
   temp = abs(temp);
   if (!temp) temp++; // wenn 0 dann 1, um Div /0 zu vermeiden
   ctrl.tick = KSTEPZZ / temp;
-}
-
-
-void setOutputValues() {
-  //analogWrite(DAC0,ctrl.dac0);
-  //analogWrite(DAC1,ctrl.dac1);
-}
-
-void resetOutputValues() {
-  //analogWrite(DAC1,0);
-  //analogWrite(DAC0,0);
-}
-
-void setCurrent() {
-  //ctrl.offset = status.offset;
-  //ctrl.dac0 = UDAC0;
-  //ctrl.dac1 = UDAC0 + ctrl.offset;
-  //setOutputValues();
-}
-
-void resetCurrent() {
-  //ctrl.offset = 0;
-  //ctrl.dac1 = 0;
-  //ctrl.dac0 = 0;
-  //resetOutputValues();
 }
 
 void resetState(Status &status) {

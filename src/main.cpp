@@ -7,23 +7,9 @@
 #include <DueTimer.h>
 #include <controller.h>
 
-// using a 200-step motor (most common)
-// #define MOTOR_STEPS 200
-// configure the pins connected
-/*
-#define DIR                         9
-#define STEP                        8
-#define RST                         7   // needs to be HIGH to work
-#define MS2                         6
-#define MS1                         5
-#define MS0                         4
-#define ENA                         3   // HIGH = stop
-*/
-
-
 IMU imu;
 
-Motor motor; // = Motor(); ???
+Motor motor; // = Motor(); TODO: muss der Konstruktor von Motor aufgerufen werden
 
 int stepTime = 1000;
 int16_t temp = -1;
@@ -46,8 +32,14 @@ void stepHandler() {
   level = !level;  
 }
 
+void ledHandler() {
+  static bool level = true;
+  digitalWrite(LED_BUILTIN, level);
+  level = !level;
+}
+
 void tickHandler() {
-  stepHandler();
+  motor.writeTick(nextDir);
   lastTickTime = micros();
   nextTickTime = lastTickTime + ctrl.tick;
   Timer3.stop();
@@ -58,6 +50,7 @@ void tickHandler() {
 void controllerHandler() {
   imu.getAllVals();
   calcController(imu.getAccX());
+  //calcController(0);
   calcTick();
   currentTime = micros();
   nextSampleTime = currentTime + SAMPLETIME;
@@ -78,7 +71,7 @@ void controllerHandler() {
 }
 
 
-
+/*
 void serialInteraction() {
   static EasyParser zerlegterString;
   
@@ -173,13 +166,12 @@ void serialInteraction() {
     }
   }
 }
-
+*/
 
 
 void setup() {
 
   
-
   motor.init(DIR, STEP, RST, MS2, MS1, MS0, ENA);
   motor.reset();
   motor.enable();
@@ -187,7 +179,14 @@ void setup() {
   Timer3.attachInterrupt(stepHandler);
 	Timer3.start(stepTime); // Calls every 50ms
 
-  //pinMode(LED_BUILTIN,OUTPUT);
+  pinMode(LED_BUILTIN,OUTPUT);
+  digitalWrite(LED_BUILTIN,LOW);
+  //pinMode(107,OUTPUT);
+  //digitalWrite(107,LOW);
+  //pinMode(103,OUTPUT);
+  //digitalWrite(103,HIGH);
+  pinMode(18,INPUT);
+  attachInterrupt(digitalPinToInterrupt(18), ledHandler, RISING);
 
   Serial.begin(9600);
   
@@ -199,11 +198,19 @@ void setup() {
   imu.calibrateACC(1,0);
   imu.calibrateACC(2,0);
   imu.printOffsets();
+
+  status.failure = false;
+  status.offset = 0;
+  status.setpoint = 100;
+  status.state = 0;
+  initController();
   
 }
 
 
 void loop() {
+
+  /*
   serialInteraction();
   
   
@@ -219,9 +226,22 @@ void loop() {
 
   Serial.print("I2C-Auslesezeit: "); Serial.print(deltatime1); Serial.println(" us");
   Serial.print("I2C-Printzeit: "); Serial.print(deltatime2); Serial.println(" us");
+*/
+  //Serial.print(digitalRead(18));
+  //if (digitalRead(18) == HIGH) {ledHandler();}
+  //delay(1000);
 
-  delay(10000);
+  for (int i=0; i<6; i++) {
+    calcController(0);
+    calcTick();
+    Serial.print("ctrl.u = ");
+    Serial.println(ctrl.u);
+    Serial.print("ctrl.v = ");
+    Serial.println(ctrl.v);
+    Serial.print("ctrl.tick = ");
+    Serial.println(ctrl.tick);
+  }
+  
+while(1);
 
-  
-  
 }
