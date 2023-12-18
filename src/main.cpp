@@ -233,13 +233,18 @@ void loop() {
 
   for (int i=0; i<6; i++) {
     calcController(0);
-    calcTick();
+    
     Serial.print("ctrl.u = ");
+    Serial.println(ctrl.u);
+    calcTick();
+    Serial.print("ctrl.u limit = ");
     Serial.println(ctrl.u);
     Serial.print("ctrl.v = ");
     Serial.println(ctrl.v);
     Serial.print("ctrl.tick = ");
     Serial.println(ctrl.tick);
+    Serial.print("ctrl.dir = ");
+    Serial.println(ctrl.dir);
   }
   
 while(1);

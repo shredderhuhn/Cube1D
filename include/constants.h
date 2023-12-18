@@ -49,7 +49,7 @@
 #define MINSETPOINT                 -1000       // [1/16384*sin(alpha_soll)/pi/2]
 #define MAXSETPOINT                 +1000       // [1/16384*sin(alpha_soll)/pi/2]
 //#define INITIALCURRENTOFFSET        1000        // vorher: 780         // [digit]
-#define MAXABSMOTORACC              27000       // [digit] bzw [10urad/s^2] // maxmimaler Betrag: 270rad/s^3
+#define MAXABSMOTORACC              25768       // [digit] bzw [10urad/s^2] // maxmimaler Betrag: 257.68rad/s^2
 #define MAXABSMOTORVEL              6283185     // [digit] bzw [10urad/s]   // 500us ticks -> 2000ticks/s = 10U/s = 2pi*10rad/s
 #define SAMPLETIME                  1000        // [µs]      // 1kHz Takt für den Anfang  
 #define K0Z                         18750      
