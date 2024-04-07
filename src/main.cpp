@@ -6,6 +6,17 @@
 #include <constants.h>
 #include <DueTimer.h>
 #include <controller.h>
+#include <math.h>
+
+#define DEBUG 1
+
+#if DEBUG == 1
+  #define debug(x) Serial.print(x)
+  #define debugln(x) Serial.println(x)
+#else
+  #define debug(x) 
+  #define debugln(x) 
+#endif
 
 IMU imu;
 
@@ -16,6 +27,7 @@ int16_t temp = -1;
 int testsum = 0;
 unsigned long  lastTickTime, currentTime, nextSampleTime, nextTickTime, newNextTickTime, time1, time2, time3, deltatime1, deltatime2;
 bool nextDir = false; // Richtung des Motors beim nächsten step
+int testx = 0;  // Auslesewert für accx der imu
 
 // Methods and vars for printing
 char result[7]; // temporary variable used in convert function
@@ -70,7 +82,41 @@ void controllerHandler() {
   }
 }
 
+/// @brief  berechnet verschiedene statistische Parameter von 
+void calcStatistics() {
+  //1000 Werte von IMUX
+  int n = 500;
+  int16_t accxs[n];
+  int32_t meanValue = 0;
+  int16_t minValue = 32767;
+  int16_t maxValue = -32768;
+  int32_t stdDev = 0;
 
+  for(int i=0;i<n;i++) {
+    //Serial.println("Wert ermitteln ...");
+    accxs[i] = imu.getVal(0x3B);
+    meanValue += accxs[i];
+    minValue = min(minValue, accxs[i]);
+    maxValue = max(maxValue, accxs[i]);
+    delayMicroseconds(500);
+  }
+  meanValue = meanValue / n;
+
+  // Staandardabweichung berechnen
+  for(int i=1;i<n;i++) {
+    stdDev += (accxs[i] - meanValue) * (accxs[i] - meanValue);
+  }
+  stdDev = stdDev / (n-1);
+  stdDev = sqrt(stdDev);
+
+  // Ausgabe der Werte
+  Serial.print("Mittelwert: "); Serial.println(meanValue);
+  Serial.print("Minwert: "); Serial.println(minValue);
+  Serial.print("Abweichung nach unten: "); Serial.println(meanValue - minValue);
+  Serial.print("Maxwert: "); Serial.println(maxValue);
+  Serial.print("Abweichung nach oben: "); Serial.println(maxValue - meanValue);
+  Serial.print("Standardabweichung: "); Serial.println(stdDev);
+}
 
 void serialInteraction() {
   static EasyParser zerlegterString;
@@ -100,6 +146,14 @@ void serialInteraction() {
       imu.printVals();
       deltatime1 = time2 - time1;
       Serial.print("I2C-Auslesezeit: "); Serial.print(deltatime1); Serial.println(" us");
+
+    } else if ((zerlegterString.cmd == "imux") && zerlegterString.get) {
+      time1 = micros();  
+      testx = imu.getVal(0x3B);
+      time2 = micros(); 
+      Serial.print("AccX = "); Serial.println(testx);
+      deltatime1 = time2 - time1;
+      Serial.print("I2C-Auslesezeit für X-Wert: "); Serial.print(deltatime1); Serial.println(" us");
         
     } else if ((zerlegterString.cmd == "iacc") && zerlegterString.set) {
       imu.setAccRange((int16_t)(zerlegterString.number[0]));
@@ -119,9 +173,10 @@ void serialInteraction() {
       Serial.print("Gesetzter Gyro-Wert = ");
       Serial.print(imu.getMaxDpsState());
     
-    } else if ((zerlegterString.cmd == "test") && zerlegterString.set) {
-        Serial.println("Kein Test definiert");
-       
+    } else if ((zerlegterString.cmd == "test") && zerlegterString.get) {
+      Serial.println("Statistik wird berechnet ...");
+      calcStatistics(); 
+      
     } else {
       //sollte nie auftreten, da immer cmd mindestens immer help enthält
       Serial.println("Message nicht verstanden.");
@@ -134,15 +189,15 @@ void serialInteraction() {
 
 void setup() {
 
-  /*
+  
   motor.init(DIR, STEP, RST, MS2, MS1, MS0, ENA);
   motor.reset();
   motor.enable();
 
   Timer3.attachInterrupt(stepHandler);
-	Timer3.start(stepTime); // Calls every 50ms
-  */
- 
+	Timer3.start(stepTime); // Calls every 1000us
+  
+
   /*
   pinMode(LED_BUILTIN,OUTPUT);
   digitalWrite(LED_BUILTIN,LOW);
@@ -153,7 +208,7 @@ void setup() {
   Serial.begin(9600);
   
   Wire.begin();
-  Wire.setClock(100000);
+  Wire.setClock(200000);
   imu.reset();
 
   /*

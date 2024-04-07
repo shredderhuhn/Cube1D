@@ -52,6 +52,7 @@ int16_t IMU::getVal(byte reg) {
     Wire.endTransmission(false); // dont stop
     Wire.requestFrom(MPU6050_ADDR, 2); // request 2 registers
     int16_t out =  Wire.read()<<8 | Wire.read();
+    //Wire.endTransmission(true);
     return out;
 }
 
