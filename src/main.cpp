@@ -158,21 +158,26 @@ void serialInteraction() {
     } else if ((zerlegterString.cmd == "iacc") && zerlegterString.set) {
       imu.setAccRange((int16_t)(zerlegterString.number[0]));
       Serial.print("Gesetzter Acc-Wert = ");
-      Serial.print(imu.getMaxGState());
+      Serial.println(imu.getMaxGState());
         
     } else if ((zerlegterString.cmd == "iacc") && zerlegterString.get) {
       Serial.print("Gesetzter Acc-Wert = ");
-      Serial.print(imu.getMaxGState());
+      Serial.println(imu.getMaxGState());
 
     } else if ((zerlegterString.cmd == "igyro") && zerlegterString.set) {
       imu.setGyroRange((int16_t)(zerlegterString.number[0]));
       Serial.print("Gesetzter Gyro-Wert = ");
-      Serial.print(imu.getMaxDpsState());
+      Serial.println(imu.getMaxDpsState());
         
     } else if ((zerlegterString.cmd == "igyro") && zerlegterString.get) {
       Serial.print("Gesetzter Gyro-Wert = ");
-      Serial.print(imu.getMaxDpsState());
+      Serial.println(imu.getMaxDpsState());
     
+    } else if ((zerlegterString.cmd == "DAC0") && zerlegterString.set) {
+      Serial.print("Gesetzter DAC0-Wert = ");
+      Serial.println((zerlegterString.number[0]));
+      analogWrite(DAC0,zerlegterString.number[0]);
+
     } else if ((zerlegterString.cmd == "test") && zerlegterString.get) {
       Serial.println("Statistik wird berechnet ...");
       calcStatistics(); 
@@ -189,14 +194,18 @@ void serialInteraction() {
 
 void setup() {
 
-  
+  /*
   motor.init(DIR, STEP, RST, MS2, MS1, MS0, ENA);
   motor.reset();
   motor.enable();
 
+  
   Timer3.attachInterrupt(stepHandler);
 	Timer3.start(stepTime); // Calls every 1000us
-  
+  */
+
+  // DAC 0 als Motorausgabe setzen
+  analogWriteResolution(12);
 
   /*
   pinMode(LED_BUILTIN,OUTPUT);

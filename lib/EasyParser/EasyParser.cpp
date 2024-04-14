@@ -104,7 +104,8 @@ void EasyParser::printHelp() {
   Serial.println("iacc?           - IMU-Beschl.Range auslesen x = [0|1|2|3] => 2g|4g|8g|16g");
   Serial.println("igyro!x         - IMU-Gyro-Range einstellen x = [0|1|2|3] => 250|500|1000|2000 dps");
   Serial.println("igyro?          - IMU-Gyro-Range auslesen x = [0|1|2|3] => 250|500|1000|2000 dps");  
-  Serial.println("test!0.0.0      - Übergabe von beliebigen Testwerte");
+  Serial.println("DAC0!x          - DAC0 schreiben x = [0..4095]");  
+  Serial.println("test?           - IMUx wird ausgelesen (einige 100x) und dann statistisch bewertet.");
   Serial.println("");
   Serial.println("Für alle Eingaben gilt: ON|VALID = 1 sowie OFF|INVALID = 0");
   
