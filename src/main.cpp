@@ -22,7 +22,7 @@ IMU imu;
 
 Motor motor; // = Motor(); TODO: muss der Konstruktor von Motor aufgerufen werden
 
-int stepTime = 1000;
+int stepTime = 2000;
 int16_t temp = -1;
 int testsum = 0;
 unsigned long  lastTickTime, currentTime, nextSampleTime, nextTickTime, newNextTickTime, time1, time2, time3, deltatime1, deltatime2;
@@ -198,11 +198,11 @@ void setup() {
   motor.init(DIR, STEP, RST, MS2, MS1, MS0, ENA);
   motor.reset();
   motor.enable();
-
+*/
   
   Timer3.attachInterrupt(stepHandler);
 	Timer3.start(stepTime); // Calls every 1000us
-  */
+  
 
   // DAC 0 als Motorausgabe setzen
   analogWriteResolution(12);
