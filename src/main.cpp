@@ -22,7 +22,7 @@ IMU imu;
 
 Motor motor; // = Motor(); TODO: muss der Konstruktor von Motor aufgerufen werden
 
-int stepTime = 2000;
+int stepTime = 250;
 int16_t temp = -1;
 int testsum = 0;
 unsigned long  lastTickTime, currentTime, nextSampleTime, nextTickTime, newNextTickTime, time1, time2, time3, deltatime1, deltatime2;
@@ -82,7 +82,7 @@ void controllerHandler() {
   }
 }
 
-/// @brief  berechnet verschiedene statistische Parameter von 
+/// @brief  berechnet verschiedene statistische Parameter von IMUX
 void calcStatistics() {
   //1000 Werte von IMUX
   int n = 500;
@@ -176,7 +176,7 @@ void serialInteraction() {
     } else if ((zerlegterString.cmd == "DAC0") && zerlegterString.set) {
       Serial.print("Gesetzter DAC0-Wert = ");
       Serial.println((zerlegterString.number[0]));
-      analogWrite(DAC0,zerlegterString.number[0]);
+      analogWrite(DAC1,zerlegterString.number[0]); //Achtung: Wir schreiben DAC1, obwohl DAC0 kommandiert ist
 
     } else if ((zerlegterString.cmd == "test") && zerlegterString.get) {
       Serial.println("Statistik wird berechnet ...");
@@ -204,11 +204,12 @@ void setup() {
 	Timer3.start(stepTime); // Calls every 1000us
   
 
-  // DAC 0 als Motorausgabe setzen
+  // DAC 0 und 1 als Motorausgabe setzen
   analogWriteResolution(12);
 
   /*
   pinMode(LED_BUILTIN,OUTPUT);
+  
   digitalWrite(LED_BUILTIN,LOW);
   pinMode(18,INPUT);
   attachInterrupt(digitalPinToInterrupt(18), ledHandler, RISING);
