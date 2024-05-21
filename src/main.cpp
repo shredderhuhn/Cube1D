@@ -29,6 +29,70 @@ unsigned long  lastTickTime, currentTime, nextSampleTime, nextTickTime, newNextT
 bool nextDir = false; // Richtung des Motors beim nächsten step
 int testx = 0;  // Auslesewert für accx der imu
 
+// neue Statistikvariablen für ge-timed-te Erfassung von imux
+int16_t imuxN = 0;
+const int16_t imuxNMax = 10; //diese Zahl muss in diesem ganzen Abschnitt immer geändert werden
+int16_t imux[10];
+const int sampleTimeForStats = 500; //us
+
+// Fucntion Definition
+void statsInit(void);
+void statsHandler(void);
+void statsClosure(void);
+
+// initialisiert die Statistikberechnung
+void statsInit(void) {
+  imuxN = 0;
+  Timer3.attachInterrupt(statsHandler);
+	Timer3.start(sampleTimeForStats); // Calls every 500us
+}
+
+// Handler für die Abfrage der 1000 Messungen von IMUX
+void statsHandler(void) {
+  imux[imuxN] = imu.getVal(0x3B);
+  imuxN++;
+  if (imuxN == imuxNMax) {
+    Timer3.stop();
+    statsClosure();
+  }
+}
+
+// Handler für Resultatsausgabe
+void statsClosure(void) {
+  int64_t imuxMean = 0;
+  int16_t imuxMin = 32767;
+  int16_t imuxMax = -32768;
+  int64_t imuxStd = 0;
+
+  for(int i=0;i<imuxNMax;i++) {
+    //Serial.println("Wert ermitteln ...");
+    imuxMean += (int64_t)imux[i];
+    imuxMin = min(imuxMin, imux[i]);
+    imuxMax = max(imuxMax, imux[i]);
+  }
+  imuxMean = imuxMean / imuxNMax;
+
+  // Staandardabweichung berechnen
+  for(int i=1;i<imuxNMax;i++) {
+    imuxStd += ((int64_t)imux[i] - imuxMean) * ((int64_t)imux[i] - imuxMean);
+  }
+  imuxStd = imuxStd / (imuxNMax-1);
+  imuxStd = sqrt(imuxStd);
+
+  // Ausgabe der Werte
+  Serial.print("Mittelwert: "); Serial.println((int)imuxMean);
+  Serial.print("Minwert: "); Serial.println((int)imuxMin);
+  Serial.print("Abweichung nach unten: "); Serial.println((int)imuxMean - (int)imuxMin);
+  Serial.print("Maxwert: "); Serial.println((int)imuxMax);
+  Serial.print("Abweichung nach oben: "); Serial.println((int)imuxMax - (int)imuxMean);
+  Serial.print("Standardabweichung: "); Serial.println((int)imuxStd);
+
+  Serial.println("Alle gemmessenen imux-Werte im Abstand von 500us:");
+  for (int i=1;i<imuxNMax;i++) {
+    Serial.println(imux[i]);
+  }
+}
+
 // Methods and vars for printing
 char result[7]; // temporary variable used in convert function
 char* toStr(int16_t character) { // converts int16 to string and formatting
@@ -173,14 +237,18 @@ void serialInteraction() {
       Serial.print("Gesetzter Gyro-Wert = ");
       Serial.println(imu.getMaxDpsState());
     
-    } else if ((zerlegterString.cmd == "DAC0") && zerlegterString.set) {
-      Serial.print("Gesetzter DAC0-Wert = ");
+    } else if ((zerlegterString.cmd == "DAC1") && zerlegterString.set) {
+      Serial.print("Gesetzter DAC1-Wert = ");
       Serial.println((zerlegterString.number[0]));
-      analogWrite(DAC1,zerlegterString.number[0]); //Achtung: Wir schreiben DAC1, obwohl DAC0 kommandiert ist
+      analogWrite(DAC1,zerlegterString.number[0]); //DAC0 ist zerstört im aktuellen Due
 
-    } else if ((zerlegterString.cmd == "test") && zerlegterString.get) {
+    } else if ((zerlegterString.cmd == "testx") && zerlegterString.get) {
       Serial.println("Statistik wird berechnet ...");
       calcStatistics(); 
+      
+    } else if ((zerlegterString.cmd == "samplex") && zerlegterString.get) {
+      Serial.println("Statistik mit fester Abtastzeit (500us) wird berechnet ...");
+      statsInit(); 
       
     } else {
       //sollte nie auftreten, da immer cmd mindestens immer help enthält
@@ -200,8 +268,8 @@ void setup() {
   motor.enable();
 */
   
-  Timer3.attachInterrupt(stepHandler);
-	Timer3.start(stepTime); // Calls every 1000us
+  // Timer3.attachInterrupt(stepHandler);
+	// Timer3.start(stepTime); // Calls every 1000us
   
 
   // DAC 0 und 1 als Motorausgabe setzen

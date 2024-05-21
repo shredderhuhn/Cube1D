@@ -89,14 +89,8 @@ bool EasyParser::InKeyWord(String aString)
 void EasyParser::printHelp() {
   Serial.println("Folgende Kommandos stehen zur Verfügung.");
   Serial.println("?               - Hilfe");
-  Serial.println("help            - Hilfe");
+  Serial.println("help?           - Hilfe");
   Serial.println("ver?            - Version der Software: Datum und Zeit");
-  Serial.println("macc!x          - Motor mit x [LSB 10mrad/s^2] beschleunigen");
-  Serial.println("macc?           - Beschleunigung x für Geschw.änderung auslesen [LSB 10mrad/s^2]");
-  Serial.println("mvel!x          - Motor auf Geschwindigkeit (Betrag in [LSB 1mrad/s]) setzen (mit Beschleunigung aus acc.x)");
-  Serial.println("mvel?           - aktuelle Gescwindigkeit auslesen [LSB 10mrad/s^2]");
-  Serial.println("micro!x         - Microsstepping x = [0..7]"); 
-  Serial.println("micro?          - Microsstepping rückgeben [Faktor]"); 
   Serial.println("imu?            - IMU-Werte ausgeben");
   Serial.println("imuraw?         - IMU-Rohwerte ausgeben");
   Serial.println("imucal?         - IMU-Offset-Werte kalibrieren und ausgeben (z=-1g");
@@ -104,8 +98,9 @@ void EasyParser::printHelp() {
   Serial.println("iacc?           - IMU-Beschl.Range auslesen x = [0|1|2|3] => 2g|4g|8g|16g");
   Serial.println("igyro!x         - IMU-Gyro-Range einstellen x = [0|1|2|3] => 250|500|1000|2000 dps");
   Serial.println("igyro?          - IMU-Gyro-Range auslesen x = [0|1|2|3] => 250|500|1000|2000 dps");  
-  Serial.println("DAC0!x          - DAC0 schreiben x = [0..4095]");  
-  Serial.println("test?           - IMUx wird ausgelesen (einige 100x) und dann statistisch bewertet.");
+  Serial.println("DAC1!x          - DAC1 schreiben x = [0..4095]");  
+  Serial.println("testx?          - IMUx wird ausgelesen (einige 100x) und dann statistisch bewertet (TA unbekannt).");
+  Serial.println("samplex?        - IMUx wird 1000x ausgelesen und dann statistisch bewertet (TA=500us).");
   Serial.println("");
   Serial.println("Für alle Eingaben gilt: ON|VALID = 1 sowie OFF|INVALID = 0");
   
