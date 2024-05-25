@@ -33,7 +33,7 @@ int testx = 0;  // Auslesewert für accx der imu
 int16_t imuxN = 0;
 const int16_t imuxNMax = 10; //diese Zahl muss in diesem ganzen Abschnitt immer geändert werden
 int16_t imux[10];
-const int sampleTimeForStats = 500; //us
+const int sampleTimeForStats = 1000; //us
 
 // Fucntion Definition
 void statsInit(void);
@@ -43,19 +43,39 @@ void statsClosure(void);
 // initialisiert die Statistikberechnung
 void statsInit(void) {
   imuxN = 0;
-  Timer3.attachInterrupt(statsHandler);
-	Timer3.start(sampleTimeForStats); // Calls every 500us
+  Timer4.attachInterrupt(statsHandler);
+	Timer4.start(10000); // Calls every 500us
+  while (imuxN < (imuxNMax-1)) {
+    debugln(imuxN);
+    //delayMicroseconds(1000);
+    //statsHandler(); 
+  }
+  Timer4.stop();
+  debugln("Timeer gestoppt");
+  statsClosure();
 }
 
 // Handler für die Abfrage der 1000 Messungen von IMUX
 void statsHandler(void) {
+  //debugln("Lesen gestartet");
   imux[imuxN] = imu.getVal(0x3B);
+  //debug("Lesen beendet: ");
+  //debugln(imux[imuxN]);
+  delayMicroseconds(500);
+  imuxN++;
+}
+
+ 
+/*
+  delay(10);
   imuxN++;
   if (imuxN == imuxNMax) {
-    Timer3.stop();
+    //Timer3.stop();
     statsClosure();
   }
-}
+  }
+  */
+//}
 
 // Handler für Resultatsausgabe
 void statsClosure(void) {
@@ -63,6 +83,9 @@ void statsClosure(void) {
   int16_t imuxMin = 32767;
   int16_t imuxMax = -32768;
   int64_t imuxStd = 0;
+  delay(1000);
+  Serial.println("Closure gestartet ...");
+  delay(1000);
 
   for(int i=0;i<imuxNMax;i++) {
     //Serial.println("Wert ermitteln ...");
@@ -248,6 +271,7 @@ void serialInteraction() {
       
     } else if ((zerlegterString.cmd == "samplex") && zerlegterString.get) {
       Serial.println("Statistik mit fester Abtastzeit (500us) wird berechnet ...");
+      delay(100);
       statsInit(); 
       
     } else {
