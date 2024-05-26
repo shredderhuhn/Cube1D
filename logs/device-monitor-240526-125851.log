@@ -1,0 +1,21 @@
+Empfangene Message: samplex?
+
+Statistik mit fester Abtastzeit (500us) wird berechnet ...
+Timeer gestoppt
+Closure gestartet ...
+Mittelwert: -248
+Minwert: -284
+Abweichung nach unten: 36
+Maxwert: -196
+Abweichung nach oben: 52
+Standardabweichung: 31
+Alle gemmessenen imux-Werte im Abstand von 500us:
+-284
+-284
+-196
+-196
+-260
+-260
+-256
+-256
+-228

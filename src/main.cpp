@@ -33,7 +33,7 @@ int testx = 0;  // Auslesewert für accx der imu
 volatile int16_t imuxN = 0;
 const int16_t imuxNMax = 10; //diese Zahl muss in diesem ganzen Abschnitt immer geändert werden
 volatile int16_t imux[10];
-const int sampleTimeForStats = 1000; //us
+const int sampleTimeForStats = 500; //us
 
 // Fucntion Definition
 void statsInit(void);
@@ -44,14 +44,14 @@ void statsClosure(void);
 void statsInit(void) {
   imuxN = 0;
   Timer4.attachInterrupt(statsHandler);
-	Timer4.start(10000); // Calls every 500us
+	Timer4.start(sampleTimeForStats); // Calls every 500us
   while (imuxN < (imuxNMax)) {
     //debugln(imuxN);
     //delayMicroseconds(1000);
     //statsHandler(); 
   }
   Timer4.stop();
-  debugln("Timeer gestoppt");
+  debugln("Timer gestoppt");
   statsClosure();
 }
 
@@ -61,7 +61,7 @@ void statsHandler(void) {
   imux[imuxN] = imu.getVal(0x3B);
   //debug("Lesen beendet: ");
   //debugln(imux[imuxN]);
-  delayMicroseconds(500);
+  //delayMicroseconds(500);
   imuxN++;
 }
 
@@ -111,7 +111,7 @@ void statsClosure(void) {
   Serial.print("Standardabweichung: "); Serial.println((int)imuxStd);
 
   Serial.println("Alle gemmessenen imux-Werte im Abstand von 500us:");
-  for (int i=1;i<imuxNMax;i++) {
+  for (int i=0;i<imuxNMax;i++) {
     Serial.println(imux[i]);
   }
 }
