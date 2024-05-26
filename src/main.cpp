@@ -30,9 +30,9 @@ bool nextDir = false; // Richtung des Motors beim nächsten step
 int testx = 0;  // Auslesewert für accx der imu
 
 // neue Statistikvariablen für ge-timed-te Erfassung von imux
-int16_t imuxN = 0;
+volatile int16_t imuxN = 0;
 const int16_t imuxNMax = 10; //diese Zahl muss in diesem ganzen Abschnitt immer geändert werden
-int16_t imux[10];
+volatile int16_t imux[10];
 const int sampleTimeForStats = 1000; //us
 
 // Fucntion Definition
@@ -45,8 +45,8 @@ void statsInit(void) {
   imuxN = 0;
   Timer4.attachInterrupt(statsHandler);
 	Timer4.start(10000); // Calls every 500us
-  while (imuxN < (imuxNMax-1)) {
-    debugln(imuxN);
+  while (imuxN < (imuxNMax)) {
+    //debugln(imuxN);
     //delayMicroseconds(1000);
     //statsHandler(); 
   }
