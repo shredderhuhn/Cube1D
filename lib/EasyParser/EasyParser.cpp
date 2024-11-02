@@ -101,6 +101,7 @@ void EasyParser::printHelp() {
   Serial.println("DAC1!x          - DAC1 schreiben x = [0..4095]");  
   Serial.println("testx?          - IMUx wird ausgelesen (einige 100x) und dann statistisch bewertet (TA unbekannt).");
   Serial.println("samplex?        - IMUx wird 1000x ausgelesen und dann statistisch bewertet (TA=500us).");
+  Serial.println("tp!step.n       - test des Tiefpasses: Sprung nach step, n Iterationen");
   Serial.println("");
   Serial.println("Für alle Eingaben gilt: ON|VALID = 1 sowie OFF|INVALID = 0");
   

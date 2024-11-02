@@ -26,8 +26,8 @@ private:
   void ParseWholeString(void);
   // eine Deklaration wie "String validKeyWord[]" und anschließender Definition im Konstruktor geht leider nicht
   // deswegen werden die Keywords hier mit definiert 
-  int nKeyWords = 10; //sizeof liefert Anzahl aller Zeichen (56 tbc)
-  String validKeyWord[10] = {"help","ver", "imu", "imux", "imucal", "iacc", "igyro", "DAC1", "testx","samplex"};
+  int nKeyWords = 11; //sizeof liefert Anzahl aller Zeichen (56 tbc)
+  String validKeyWord[11] = {"help","ver", "imu", "imux", "imucal", "iacc", "igyro", "DAC1", "testx","samplex","tp"};
   String wholeString = "";
   bool InKeyWord(String);
 

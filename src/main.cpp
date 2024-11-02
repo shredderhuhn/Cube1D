@@ -11,8 +11,8 @@
 #define DEBUG 1
 
 #if DEBUG == 1
-  #define debug(x) Serial.print(x)
-  #define debugln(x) Serial.println(x)
+  #define debug(x) Serial.print(#x); Serial.print(" = "); Serial.println(x)
+  #define debugprint(x) Serial.println(#x)
 #else
   #define debug(x) 
   #define debugln(x) 
@@ -29,11 +29,46 @@ unsigned long  lastTickTime, currentTime, nextSampleTime, nextTickTime, newNextT
 bool nextDir = false; // Richtung des Motors beim nächsten step
 int testx = 0;  // Auslesewert für accx der imu
 
+
+/// @brief Tiefpassfilter für T = 32ms und und TA = 1ms und Werte zwischen -16384..16383
+/// @param filter_in gemessener IMUX-Wert zwischen -16384..16383 (14bit) (-1 = reset)
+/// @return filter_out zwischen -16384..16383 (14bit)
+int32_t filter(int32_t u) {
+  static int ysold = 0;
+  int ys,y, ys1, ys2;
+  const int32_t ksu = 993;
+  const int32_t ksy = 993;
+  if (u == -1) {ysold = 0; u = 0;}
+  ys1 = (ksy * ysold) >> 10;
+  ys2 = ((ksu * u) >> 10);
+  ys = ys1 + ys2;
+  debug(ys1);
+  debug(ys2);
+  debug(ys);
+  ysold = ys;
+  y = ys >> 5;
+  debug(y);
+  return y;
+}
+
+/// @brief Test des Tiefpassfilters
+/// @param step - Schrittgröße -16384..16383
+/// @param n - Anzahl der Schritte (max. 1000)
+void testFilter(int step, int n) {
+  n = constrain(n, 0, 1000);
+  step = constrain(step, -16384, 16383);
+  filter(-1); // reset filter
+  Serial.println("Filter rückgesetzt");
+  for (int i=0; i<n; i++ ) {
+    Serial.println(filter(step));
+  }
+}
+
 // neue Statistikvariablen für ge-timed-te Erfassung von imux
 volatile int16_t imuxN = 0;
-const int16_t imuxNMax = 10; //diese Zahl muss in diesem ganzen Abschnitt immer geändert werden
-volatile int16_t imux[10];
-const int sampleTimeForStats = 500; //us
+const int16_t imuxNMax = 1000; //diese Zahl muss in diesem ganzen Abschnitt immer geändert werden
+volatile int16_t imux[1000];
+const int sampleTimeForStats = 1000; //us
 
 // Fucntion Definition
 void statsInit(void);
@@ -51,7 +86,7 @@ void statsInit(void) {
     //statsHandler(); 
   }
   Timer4.stop();
-  debugln("Timer gestoppt");
+  debugprint("Timer gestoppt");
   statsClosure();
 }
 
@@ -274,7 +309,15 @@ void serialInteraction() {
       delay(100);
       statsInit(); 
       
-    } else {
+    } else if ((zerlegterString.cmd == "tp") && zerlegterString.set) {
+      Serial.print("Tiefpassberechnung für Sprung von ");
+      Serial.print(zerlegterString.number[0]);
+      Serial.print(" für die Anzahl von ");
+      Serial.print(zerlegterString.number[1]);
+      Serial.println("Schritten (max. 1000):");
+      testFilter(zerlegterString.number[0], zerlegterString.number[1]);
+      
+          } else {
       //sollte nie auftreten, da immer cmd mindestens immer help enthält
       Serial.println("Message nicht verstanden.");
       zerlegterString.printHelp();
